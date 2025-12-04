@@ -37,9 +37,10 @@ export const getTestParametersSchema = z.object({
 // Patient Schemas
 export const createPatientSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
-  age: z.number().min(0, 'Age must be a positive number').optional(),
-  gender: z.enum(['Male', 'Female', 'Other']).optional(),
+  age: z.number().min(0, 'Age must be a positive number').max(150, 'Invaid Age'),
+  gender: z.enum(['Male', 'Female', 'Other']),
   phoneNumber: z.string().min(10, 'Phone number must be at least 10 digits'),
+  whatsappNumber :z.string().min(10, 'Whatsapp number must be at least 10 digits'),
   addressLine1: z.string().min(1, 'Address is required'),
   state: z.string().min(1, 'State is required'),
   pincode: z.string().min(6, 'Pincode must be 6 digits').max(6),

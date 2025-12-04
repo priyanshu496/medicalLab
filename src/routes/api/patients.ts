@@ -1,25 +1,15 @@
 import { createServerFn } from '@tanstack/react-start';
 import { eq } from 'drizzle-orm';
-import { z } from 'zod';
 import { db } from '@/db/index';
 import { patients, patientTests } from '@/db/schema';
+import { createPatientSchema } from '@/lib/validation_schemas';
 
-const createPatientSchema = z.object({
-  patientId: z.string().optional(),
-  fullName: z.string(),
-  age: z.number(),
-  gender: z.string(),
-  phoneNumber: z.string(),
-  addressLine1: z.string(),
-  state: z.string(),
-  pincode: z.string(),
-  medicalHistory: z.string().optional(),
-  allergies: z.string().optional(),
-  referredBy: z.number().optional(),
-  insurancePolicyNumber: z.string().optional(),
-  patientConsent: z.boolean(),
-  testIds: z.array(z.number()).optional(),
-});
+// Generate unique patient ID
+function generatePatientId(): string {
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const random = Math.random().toString(36).substring(2, 7).toUpperCase();
+  return `PAT-${timestamp}-${random}`;
+}
 
 export const createPatient = createServerFn({ method: 'POST' })
   .inputValidator(createPatientSchema)
@@ -27,42 +17,45 @@ export const createPatient = createServerFn({ method: 'POST' })
     try {
       const { testIds, ...patientData } = data;
 
-      // Insert patient
+      // Generate patientId before insertion
+      const patientId = generatePatientId();
+
+      // Insert patient with patientId
       const result = await db
         .insert(patients)
         .values({
-          ...patientData,
-          patientId: '',
+          patientId,
+          fullName: patientData.fullName,
+          age: patientData.age || 0,
+          gender: patientData.gender || 'other',
+          phoneNumber: patientData.phoneNumber || '',
+          whatsappNumber: patientData.whatsappNumber || '',
+          state: patientData.state || '',
+          pincode: patientData.pincode || '',
+          addressLine1: patientData.addressLine1 || '',
           medicalHistory: patientData.medicalHistory || null,
           allergies: patientData.allergies || null,
+          patientConsent: patientData.patientConsent || false,
+          referredBy: patientData.referredBy || null,
           insurancePolicyNumber: patientData.insurancePolicyNumber || null,
         })
-        .returning();
-      
-      const generatedSerialId = result[0].id;
-      const patientId = `PATNO-${generatedSerialId.toString().padStart(6, '0')}`;
-
-      const updated = await db
-        .update(patients)
-        .set({ patientId })
-        .where(eq(patients.id, generatedSerialId))
         .returning();
 
       // Insert patient tests if provided
       if (testIds && testIds.length > 0) {
         const patientTestsData = testIds.map((testId: number) => ({
-          patientId: updated[0].id,
+          patientId: result[0].id,
           testId,
           status: 'pending',
         }));
         await db.insert(patientTests).values(patientTestsData);
       }
 
-      console.log('Database insert successful:', updated[0]);
+      console.log('Patient created successfully:', result[0]);
 
       return { 
         success: true, 
-        patient: updated[0],
+        patient: result[0] as Record<string, any>,
         testIds: testIds || [] 
       };
     } catch (error) {

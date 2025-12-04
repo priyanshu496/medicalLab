@@ -1,15 +1,14 @@
-import { createFileRoute, useNavigate, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useServerFn } from '@tanstack/react-start';
-import { AlertCircle, Lock, User, Mail, Phone, ArrowLeft, Building2 } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Building2, Lock, Mail, Phone, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { createUser, getAvailableRoles } from '@/routes/api/users';
 import { getMainLabInfo } from '@/routes/api/lab-info';
+import { createUser, getAvailableRoles } from '@/routes/api/users';
 
 export const Route = createFileRoute('/signup')({
   component: Signup,
@@ -251,7 +250,6 @@ function Signup() {
                   Full Name
                 </Label>
                 <Input
-                  id="fullName"
                   type="text"
                   name="fullName"
                   value={formData.fullName}
@@ -269,7 +267,6 @@ function Signup() {
                   Username
                 </Label>
                 <Input
-                  id="userId"
                   type="text"
                   name="userId"
                   value={formData.userId}
@@ -287,7 +284,6 @@ function Signup() {
                   Email
                 </Label>
                 <Input
-                  id="email"
                   type="email"
                   name="email"
                   value={formData.email}
@@ -305,7 +301,6 @@ function Signup() {
                   Phone Number
                 </Label>
                 <Input
-                  id="phoneNumber"
                   type="tel"
                   name="phoneNumber"
                   value={formData.phoneNumber}
@@ -323,7 +318,6 @@ function Signup() {
                   Role
                 </Label>
                 <select
-                  id="role"
                   value={selectedRole || ''}
                   onChange={(e) => setSelectedRole(Number(e.target.value))}
                   className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-green-600 focus:outline-none bg-white disabled:bg-gray-100"
@@ -347,7 +341,6 @@ function Signup() {
                   Password
                 </Label>
                 <Input
-                  id="password"
                   type="password"
                   name="password"
                   value={formData.password}
@@ -365,7 +358,6 @@ function Signup() {
                   Confirm Password
                 </Label>
                 <Input
-                  id="confirmPassword"
                   type="password"
                   name="confirmPassword"
                   value={formData.confirmPassword}

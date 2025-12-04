@@ -6,16 +6,13 @@ import {
   ClipboardList,
   DollarSign,
   FileText,
-  LogOut,
-  Settings,
-  Shield,
   Stethoscope,
   TestTube,
   Users,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Header } from '@/components/Header';
+import { Card, CardContent} from '@/components/ui/card';
 
 export const Route = createFileRoute('/dashboard/master')({
   component: MasterDashboard,
@@ -41,11 +38,6 @@ function MasterDashboard() {
     setCurrentUser(user);
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('currentUser');
-    navigate({ to: '/login' });
-  };
-
   if (!currentUser) {
     return (
       <div className="min-h-screen bg-linear-to-br from-blue-50 via-cyan-50 to-blue-50 flex items-center justify-center">
@@ -56,28 +48,12 @@ function MasterDashboard() {
 
   const dashboardItems = [
     {
-      title: 'Lab Configuration',
-      description: 'Setup lab details, logo, GSTIN, registration',
-      icon: Building2,
-      color: 'from-blue-600 to-cyan-500',
-      href: '/lab-setup',
-      badge: 'Setup',
-    },
-    {
-      title: 'Employee Management',
-      description: 'Manage users, roles, and permissions',
-      icon: Users,
-      color: 'from-purple-600 to-pink-500',
-      href: '/employee-management',
-      badge: 'Admin',
-    },
-    {
-      title: 'Doctor Management',
-      description: 'Add and manage doctors referral database',
-      icon: Stethoscope,
-      color: 'from-green-600 to-emerald-500',
-      href: '/setup',
-      badge: 'Setup',
+      title: 'Patient Registration',
+      description: 'Register patients and assign tests',
+      icon: ClipboardList,
+      color: 'from-orange-600 to-red-500',
+      href: '/register',
+      badge: 'Operations',
     },
     {
       title: 'Test Management',
@@ -86,14 +62,6 @@ function MasterDashboard() {
       color: 'from-indigo-600 to-blue-500',
       href: '/setup',
       badge: 'Setup',
-    },
-    {
-      title: 'Patient Registration',
-      description: 'Register patients and assign tests',
-      icon: ClipboardList,
-      color: 'from-orange-600 to-red-500',
-      href: '/register',
-      badge: 'Operations',
     },
     {
       title: 'Test Entry',
@@ -112,6 +80,22 @@ function MasterDashboard() {
       badge: 'Operations',
     },
     {
+      title: 'Doctor Management',
+      description: 'Add and manage doctors referral database',
+      icon: Stethoscope,
+      color: 'from-green-600 to-emerald-500',
+      href: '/setup',
+      badge: 'Setup',
+    },
+    {
+      title: 'Employee Management',
+      description: 'Manage users, roles, and permissions',
+      icon: Users,
+      color: 'from-purple-600 to-pink-500',
+      href: '/employee-management',
+      badge: 'Admin',
+    },
+    {
       title: 'Billing & Reports',
       description: 'Manage payments and generate bills',
       icon: DollarSign,
@@ -128,97 +112,38 @@ function MasterDashboard() {
       badge: 'Analytics',
       disabled: false,
     },
+    {
+      title: 'Lab Configuration',
+      description: 'Setup lab details, logo, GSTIN, registration',
+      icon: Building2,
+      color: 'from-blue-600 to-cyan-500',
+      href: '/lab-setup',
+      badge: 'Setup',
+    },
   ];
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-cyan-50 to-blue-50">
-      {/* Header */}
-      <header className="bg-white shadow-lg sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-linear-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center shadow-md">
-              <Shield className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Master Dashboard
-              </h1>
-              <p className="text-sm text-gray-600">
-                {currentUser.labInfo?.labName || 'Lab Management System'}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm font-semibold text-gray-900">
-                {currentUser.fullName}
-              </p>
-              <p className="text-xs text-gray-600">Master Administrator</p>
-            </div>
-            <Button
-              onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 gap-2"
-            >
-              <LogOut className="w-4 h-4" />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </header>
-
       {/* Lab Info Card */}
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <Card className="shadow-xl border-0 mb-8 bg-linear-to-r from-blue-600 to-cyan-500 text-white">
-          <CardContent className="p-8">
-            <div className="flex items-center gap-6">
+        {/* Dashboard Items Grid */}
+        <div>
+          <div className="flex items-center gap-4 mb-10">
+            <div className="">
               {currentUser.labInfo?.labLogo && (
                 <img
                   src={currentUser.labInfo.labLogo}
                   alt="Lab Logo"
-                  className="w-20 h-20 rounded-lg bg-white p-2 object-contain"
+                  className="w-30 h-15 rounded-lg p-2 object-contain"
                 />
               )}
-              <div className="flex-1">
-                <h2 className="text-3xl font-bold mb-2">
-                  {currentUser.labInfo?.labName || 'Your Lab'}
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <p className="opacity-90">Registration No.</p>
-                    <p className="font-semibold">
-                      {currentUser.labInfo?.registrationNumber || '-'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="opacity-90">GSTIN</p>
-                    <p className="font-semibold">
-                      {currentUser.labInfo?.gstinNumber || '-'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="opacity-90">Police Station</p>
-                    <p className="font-semibold">
-                      {currentUser.labInfo?.policeStationName || '-'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <Link to="/lab-setup">
-                <Button className="bg-white text-blue-600 hover:bg-gray-100 gap-2">
-                  <Settings className="w-4 h-4" />
-                  Edit Lab Info
-                </Button>
-              </Link>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Dashboard Items Grid */}
-        <div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">
-            Dashboard & Control Center
-          </h3>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {currentUser.labInfo?.labName} Dashboard
+              </h1>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {dashboardItems.map((item, index) => {
               const IconComponent = item.icon;

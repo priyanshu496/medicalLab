@@ -48,6 +48,7 @@ export const doctors = pgTable('doctors', {
   specialization: text('specialization'),
   contactNumber: text('contact_number'),
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 // Tests table
@@ -57,6 +58,7 @@ export const tests = pgTable('tests', {
   description: text('description'),
   price: decimal('price', { precision: 10, scale: 2 }).notNull(),
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 // Test parameters table
@@ -67,6 +69,7 @@ export const testParameters = pgTable('test_parameters', {
   unit: text('unit'),
   normalRange: text('normal_range'),
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 // Patients table
@@ -74,9 +77,10 @@ export const patients = pgTable('patients', {
   id: serial('id').primaryKey(),
   patientId: text('patient_id').notNull().unique(),
   fullName: text('full_name').notNull(),
-  age: integer('age'),
-  gender: text('gender'),
+  age: integer('age').notNull(),
+  gender: text('gender').notNull(),
   phoneNumber: text('phone_number').notNull(),
+  whatsappNumber: text('whatsapp_number').notNull(),
   addressLine1: text('address_line_1').notNull(),
   state: text('state').notNull(),
   pincode: text('pincode').notNull(),
@@ -86,6 +90,7 @@ export const patients = pgTable('patients', {
   referredBy: integer('referred_by').references(() => doctors.id),
   patientConsent: boolean('patient_consent').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 // Patient tests table (junction table)
@@ -98,6 +103,7 @@ export const patientTests = pgTable('patient_tests', {
   testResultDate: timestamp('test_result_date'), // When results were added
   reportImpression: text('report_impression'), // Medical impressions/remarks for the test
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 // Test results table
@@ -108,6 +114,7 @@ export const testResults = pgTable('test_results', {
   value: text('value').notNull(),
   remarks: text('remarks'),
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 // Bills table
@@ -120,6 +127,7 @@ export const bills = pgTable('bills', {
   finalAmount: decimal('final_amount', { precision: 10, scale: 2 }).notNull(),
   isPaid: boolean('is_paid').default(false),
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 // Relations

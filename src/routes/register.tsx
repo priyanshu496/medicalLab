@@ -4,8 +4,8 @@ import { useServerFn } from '@tanstack/react-start';
 import { AlertCircle, ArrowRight, CheckCircle2, Home } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { Header } from '@/components/header';
+import type { z } from 'zod';
+import { Header } from '@/components/Header';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { createPatientSchema } from '@/lib/validation_schemas';
 import { getAllDoctors } from '@/routes/api/doctors';
 import { createPatient } from '@/routes/api/patients';
 import { getAllTests } from '@/routes/api/tests';
@@ -23,23 +24,8 @@ export const Route = createFileRoute('/register')({
   component: Register,
 });
 
-const patientFormSchema = z.object({
-  fullName: z.string().min(1, 'Full name is required'),
-  age: z.number().min(1, 'Age must be at least 1').optional(),
-  gender: z.enum(['Male', 'Female', 'Other']).optional(),
-  phoneNumber: z.string().min(10, 'Phone number must be 10 digits').max(10),
-  addressLine1: z.string().min(1, 'Address is required'),
-  state: z.string().min(1, 'State is required'),
-  pincode: z.string().min(6, 'Pincode must be 6 digits').max(6),
-  medicalHistory: z.string().optional(),
-  allergies: z.string().optional(),
-  referredBy: z.number().optional(),
-  insurancePolicyNumber: z.string().optional(),
-  patientConsent: z.boolean().refine((val) => val === true, 'Patient consent is required'),
-  testIds: z.array(z.number()).min(1, 'Please select at least one test'),
-});
 
-type PatientFormData = z.infer<typeof patientFormSchema>;
+type PatientFormData = z.infer<typeof createPatientSchema>;
 
 function Register() {
   const navigate = useNavigate();
@@ -49,7 +35,6 @@ function Register() {
   const [doctors, setDoctors] = useState<any[]>([]);
   const [tests, setTests] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(true);
-
   const createPatientFn = useServerFn(createPatient);
   const getDoctorsFn = useServerFn(getAllDoctors);
   const getTestsFn = useServerFn(getAllTests);
@@ -71,7 +56,7 @@ function Register() {
       }
     };
     loadData();
-  }, []);
+  },);
 
   const {
     register,
@@ -80,7 +65,7 @@ function Register() {
     watch,
     formState: { errors, isSubmitting },
   } = useForm<PatientFormData>({
-    resolver: zodResolver(patientFormSchema),
+    resolver: zodResolver(createPatientSchema),
     defaultValues: {
       state: 'Assam',
       testIds: [],
@@ -88,16 +73,16 @@ function Register() {
     },
   });
 
-  const selectedTests = watch('testIds') || [];
+  // const selectedTests = watch('testIds') || [];
   const patientConsent = watch('patientConsent');
 
-  const handleTestToggle = (testId: number) => {
-    const currentTests = selectedTests;
-    const newTests = currentTests.includes(testId)
-      ? currentTests.filter((t) => t !== testId)
-      : [...currentTests, testId];
-    setValue('testIds', newTests);
-  };
+  // const handleTestToggle = (testId: number) => {
+  //   // const currentTests = selectedTests;
+  //   const newTests = currentTests.includes(testId)
+  //     ? currentTests.filter((t) => t !== testId)
+  //     : [...currentTests, testId];
+  //   setValue('testIds', newTests);
+  // };
 
   const onSubmit = async (formData: PatientFormData) => {
     setSubmitSuccess(false);
@@ -121,11 +106,11 @@ function Register() {
     }
   };
 
-  const calculateTotal = () => {
-    return tests
-      .filter((test) => selectedTests.includes(test.id))
-      .reduce((sum, test) => sum + Number(test.price), 0);
-  };
+  // const calculateTotal = () => {
+  //   return tests
+  //     .filter((test) => selectedTests.includes(test.id))
+  //     .reduce((sum, test) => sum + Number(test.price), 0);
+  // };
 
   if (loadingData) {
     return (
@@ -141,8 +126,6 @@ function Register() {
   }
 
   return (
-    <>
-    <Header />
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-cyan-50 p-4 md:p-8">
       <div className="max-w-full mx-auto">
         <Card className="shadow-2xl border-0 overflow-hidden">
@@ -203,7 +186,7 @@ function Register() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="age" className="text-gray-900 font-medium">Age</Label>
+                    <Label htmlFor="age" className="text-gray-900 font-medium">Age<span className="text-red-500">*</span></Label>
                     <Input
                       type="number"
                       {...register('age', { valueAsNumber: true })}
@@ -219,7 +202,7 @@ function Register() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-gray-900 font-medium">Gender</Label>
+                    <Label className="text-gray-900 font-medium">Gender<span className="text-red-500">*</span></Label>
                     <RadioGroup
                       onValueChange={(value) =>
                         setValue('gender', value as 'Male' | 'Female' | 'Other')
@@ -258,6 +241,24 @@ function Register() {
                       </p>
                     )}
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="whatsappNumber" className="text-gray-900 font-medium">
+                      Whatsapp Number <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      {...register('whatsappNumber')}
+                      placeholder="9876543254"
+                      maxLength={10}
+                      className="bg-white"
+                    />
+                    {errors.whatsappNumber && (
+                      <p className="text-sm text-red-600 flex items-center gap-1">
+                        <AlertCircle className="w-4 h-4" />
+                        {errors.whatsappNumber.message}
+                      </p>
+                    )}
+                  </div>
+                  
                 </div>
               </div>
 
@@ -366,7 +367,7 @@ function Register() {
               </div>
 
               {/* Tests Selection */}
-              <div className="space-y-4 bg-linear-to-br from-blue-50 to-cyan-50 rounded-xl p-6">
+              {/* <div className="space-y-4 bg-linear-to-br from-blue-50 to-cyan-50 rounded-xl p-6">
                 <h3 className="text-lg font-bold text-gray-900 border-b-2 border-blue-200 pb-2">
                   Select Tests <span className="text-red-500">*</span>
                 </h3>
@@ -377,6 +378,7 @@ function Register() {
                       key={test.id}
                       className="flex items-center justify-between p-4 bg-white border-2 border-gray-200 rounded-lg hover:border-blue-400 hover:shadow-md cursor-pointer transition-all"
                     >
+                      <input type="text" className='hidden' />
                       <div className="flex items-center space-x-3">
                         <Checkbox
                           checked={selectedTests.includes(test.id)}
@@ -411,7 +413,7 @@ function Register() {
                     </div>
                   </div>
                 )}
-              </div>
+              </div> */}
 
               {/* Consent */}
               <div className="space-y-4 bg-gray-50 rounded-xl p-6">
@@ -479,6 +481,5 @@ function Register() {
         </Card>
       </div>
     </div>
-    </>
   );
 }

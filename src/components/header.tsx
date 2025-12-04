@@ -1,41 +1,80 @@
-import { Link } from '@tanstack/react-router';
-import { Activity, Home } from 'lucide-react';
+import { Link, useNavigate } from '@tanstack/react-router';
+import { ArrowBigLeft, LogOut, PlusIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Button } from './ui/button';
 
-interface HeaderProps {
-  showHomeButton?: boolean;
-  className?: string;
-}
 
-export function Header({ showHomeButton = true, className = '' }: HeaderProps) {
+export function Header() {
+ const navigate = useNavigate();
+const [currentUser, setCurrentUser] = useState<any>(null);
+useEffect(() => {
+    const storedUser = localStorage.getItem('currentUser');
+    if (!storedUser) {
+      navigate({ to: '/login' });
+      return;
+    }
+
+    const user = JSON.parse(storedUser);
+    if (user.role !== 'master') {
+      navigate({ to: '/dashboard/cashier' });
+      return;
+    }
+
+    setCurrentUser(user);
+  }, [navigate]);
+  const handleLogout = () => {
+    localStorage.removeItem('currentUser');
+    navigate({ to: '/login' });
+  };
+   if (!currentUser) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-blue-50 via-cyan-50 to-blue-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   return (
-    <header className={`bg-white border-b border-gray-200 shadow-sm ${className}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo and Brand */}
-          <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="w-12 h-12 bg-linear-to-br from-blue-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
-              <Activity className="w-7 h-7 text-white" />
+    <header className="bg-white shadow-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <div className="">
+              <PlusIcon className='w-15 h-15'/>
             </div>
             <div>
-              <h1 className="text-2xl font-bold bg-linear-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
-                NextGenLab
+              <h1 className="text-2xl font-bold text-gray-900">
+                LabSanchalak
               </h1>
-              <p className="text-xs text-gray-600 font-medium">Lab Management System</p>
+              <p className="text-md text-gray-600">
+                A Laboratory management System by Globizhub India Pvt Ltd
+              </p>
             </div>
-          </Link>
+          </div>
 
-          {/* Navigation */}
-          {showHomeButton && (
-            <Link
-              to="/"
-              className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-blue-600 to-cyan-500 text-white rounded-lg hover:from-blue-700 hover:to-cyan-600 transition-all shadow-md hover:shadow-lg"
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="text-sm font-semibold text-gray-900">
+                {currentUser.fullName}
+              </p>
+              <p className="text-xs text-gray-600">Master Administrator</p>
+            </div>
+            <Button
+              onClick={handleLogout}
+              className="bg-red-600 hover:bg-red-700 gap-2"
             >
-              <Home className="w-4 h-4" />
-              <span className="font-semibold">Dashboard</span>
+              <LogOut className="w-4 h-4" />
+              Logout
+            </Button>
+            <Link to='/'>
+            
+            <Button
+              className=" gap-2"
+            >
+              <ArrowBigLeft className="w-4 h-4" /> 
+            </Button>
             </Link>
-          )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
   );
 }

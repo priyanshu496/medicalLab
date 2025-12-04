@@ -28,26 +28,6 @@ function Setup() {
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-cyan-50 p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-linear-to-br from-green-600 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
-              <Settings className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">System Setup</h1>
-              <p className="text-gray-600">Configure doctors, tests, and parameters</p>
-            </div>
-          </div>
-          <Button 
-            onClick={() => navigate({ to: '/' })} 
-            variant="outline"
-            className="gap-2"
-          >
-            <Home className="w-4 h-4" />
-            Back to Home
-          </Button>
-        </div>
 
         <Card className="shadow-2xl border-0 overflow-hidden">
           {/* Tabs */}

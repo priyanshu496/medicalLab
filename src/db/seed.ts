@@ -1,6 +1,6 @@
-import { db } from './index';
-import { doctors, testParameters, tests, userRoles, labInfo, users } from './schema';
 import crypto from 'crypto';
+import { db } from './index';
+import { doctors, labInfo, testParameters, tests, userRoles, users } from './schema';
 
 function hashPassword(password: string): string {
   return crypto.createHash('sha256').update(password).digest('hex');
@@ -130,16 +130,19 @@ async function seed() {
     .values([
       {
         name: 'Dr. Rajesh Kumar',
+        doctorId: 'doc_rajesh_kumar',
         specialization: 'General Physician',
         contactNumber: '9876543210',
       },
       {
         name: 'Dr. Priya Sharma',
+        doctorId: 'doc_priya_sharma',
         specialization: 'Cardiologist',
         contactNumber: '9876543211',
       },
       {
         name: 'Dr. Amit Patel',
+        doctorId: 'doc_amit_patel',
         specialization: 'Pathologist',
         contactNumber: '9876543212',
       },
